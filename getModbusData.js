@@ -1,5 +1,4 @@
-var ModbusRTU = require("modbus-serial");
-const collectAndPush = require("./collectAndPush")
+var ModbusRTU = require("modbus-serial")
 const TB = require('thingsboard_api')
 const config = require('dotenv').config();
 /*var machines = [
@@ -22,6 +21,8 @@ async function main(){
     }
 
     await TB.createConnection(options);
+    collectAndPush = require("./collectAndPush")
+
     let keys = ['ip','port','machineType']
     var machines = await  TB.get.allObjectsIDandKeysByType('machine','device',keys)
     var ourMachines = []
