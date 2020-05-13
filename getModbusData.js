@@ -1,16 +1,7 @@
 var ModbusRTU = require("modbus-serial")
 const TB = require('thingsboard_api')
 const config = require('dotenv').config();
-/*var machines = [
-    {ip: "83.234.93.121", port: 10501, id: 10501, machineType: ''},
-    {ip: "83.234.93.121", port: 10502, id: 10502},
-    {ip: "83.234.93.121", port: 10503, id: 10503},
-    {ip: "83.234.93.121", port: 10504, id: 10504},
-    {ip: "83.234.93.121", port: 10505, id: 10505},
-    {ip: "83.234.93.121", port: 10506, id: 10506},
-    ]
 
- */
 // name || TB_id
 async function main(){
     let options = {
@@ -110,6 +101,7 @@ function getModbusData(machines) {
 
 //Collected machine data
 setInterval(function () {
+    let example  = machineData
     if(typeof machineData !='undefined')
         collectAndPush.collectParseData(machineData)
 }, 1000)

@@ -15,10 +15,10 @@ async function main() {
 
 function stateChange(stateName,attrs,telemetry,idMachine){
     if(typeof machineData[idMachine].universalState != 'undefined')
-        attrs.universalStateOld = machineData[idMachine].universalState
+        telemetry.universalStateOld = machineData[idMachine].universalState
 
     machineData[idMachine].universalState = states[stateName].codeState
-    attrs.universalState = states[stateName].codeState
+    telemetry.universalStateNew = states[stateName].codeState
     for(let key in states){
         if(key == stateName)
             telemetry[key] = 1
