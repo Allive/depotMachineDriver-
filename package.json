@@ -1,0 +1,8 @@
+{
+  "name": "depotmachinedriver",
+  "version": "1.0.0",
+  "dependencies": {
+    "dotenv": "latest",
+    "thingsboard_api": "latest"
+  }
+}
