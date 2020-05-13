@@ -15,14 +15,22 @@ async function main() {
 
 function checkState(machineID,input,output,telemetry){
     let nowState;
+/*
+    INPUT
+    X0.0 ,0.4 Вниз (для Комплекта тепловозных домкратов)	['00010001']    [17]
+    X0.2 ,0.6 Вверх (для Комплекта тепловозных домкратов)	['01000010']    [66]
+    X0.0 Включено (для ТЭД и Станка обточки колёсных пар) 	['00000001]	    [1]
 
+    OUTPUT
+    Y0.0 Работа 	['00000001]	                                            [1] //DONE
+ */
     if(typeof input == 'undefined')
         input = [];
     if(typeof output == 'undefined')
         output = [];
 
     //Здесь анализ состояния
-    if(input[0] === 3 || output[0] === 1)
+    if(input[0] === 3 || output[0] === 1 || input[0] === 1)
         nowState = states['work'].codeState;
     else
         nowState = states['down'].codeState;
@@ -40,6 +48,7 @@ function checkState(machineID,input,output,telemetry){
         telemetry[key] = states[key].codeState === nowState ? 1: 0
     }
 
+    //Сбрасываем инфу в глобальной переменной, I/O приходят не всегда
     machineData[machineID].output = []
     machineData[machineID].input = []
     return telemetry
@@ -56,7 +65,7 @@ async function collectParseData(data){
 
                 case "input":
                     //Нужно только на этапе дебага
-                    if((typeof machineData[id].inputStr == 'undefined' || machineData[id].inputStr !== value.toString().replace(',','_')) && value.length !== 0)
+                    if((typeof machineData[id].inputStr == 'undefined' || machineData[id].inputStr !== value.toString()) && value.length !== 0)
                     {
                         console.log({
                             ts: new Date().toLocaleString(),
@@ -65,13 +74,13 @@ async function collectParseData(data){
                         });
                         telemetry.input0 = value[0];
                         telemetry.input1 = value[1];
-                        telemetry.input = new Date().toLocaleTimeString() +" _ "+  value.toString().replace(',','_');
-                        machineData[id].inputStr = value.toString().replace(',','_')
+                        machineData[id].inputStr = value.toString()
                     }
+                    telemetry.input = value.toString()
                     break;
                 case "output":
                     //Нужно только на этапе дебага
-                    if((typeof machineData[id].outputStr == 'undefined' || machineData[id].outputStr != value.toString().replace(',','_')) && value.length !==0)
+                    if((typeof machineData[id].outputStr == 'undefined' || machineData[id].outputStr !== value.toString()) && value.length !==0)
                     {
                         console.log({
                             ts: new Date().toLocaleString(),
@@ -80,12 +89,10 @@ async function collectParseData(data){
                         });
                         telemetry.output0 = value[0];
                         telemetry.output1 = value[1];
-                        telemetry.output = new Date().toLocaleTimeString() +" _ "+ value.toString().replace(',','_');
-                        machineData[id].outputStr = value.toString().replace(',','_')
+                        machineData[id].outputStr = value.toString()
                     }
+                    telemetry.output = value.toString()
                     break;
-
-
                 case 'la':
                     telemetry.w1 = data[id][key];
                     break;
@@ -96,9 +103,9 @@ async function collectParseData(data){
                     telemetry.w3 = data[id][key];
                     break
             }
-            //Идём проверять, какое сейчас состояние, заодно берем новую телеметрию (или нет, если ничего не изменилось)
-            telemetry =  checkState(id,data[id].input, data[id].output,telemetry)
         }
+        //Идём проверять, какое сейчас состояние, заодно берем новую телеметрию (или нет, если ничего не изменилось)
+        telemetry =  checkState(id,data[id].input, data[id].output,telemetry)
         let ts = new Date().getTime()
         pushData(data[id].name,attrs,telemetry, ts);
 
