@@ -48,10 +48,12 @@ async function collectParseData(data){
                     }
 
 
+
                     //Нужно только на этапе дебага
                     if(typeof machineData[id].inputStr == 'undefined' || machineData[id].inputStr !== value.toString().replace(',','_'))
                     {
                         console.log({
+                            ts: new Date().toLocaleString(),
                             name:machineData[id].name,
                             input:value
                         })
@@ -62,9 +64,16 @@ async function collectParseData(data){
                     }
                     break
                 case "output":
+                    if(value[0] === 1 && (typeof machineData[id].universalState == 'undefined' || machineData[id].universalState !== states['work'].codeState)) {
+
+                        let afterChange = stateChange('work',attrs,telemetry, id)
+                        attrs = afterChange.attrs
+                        telemetry = afterChange.telemetry
+                    }
                     if(typeof machineData[id].outputStr == 'undefined' || machineData[id].outputStr != value.toString().replace(',','_'))
                     {
                         console.log({
+                            ts: new Date().toLocaleString(),
                             name:machineData[id].name,
                             output:value
                         })

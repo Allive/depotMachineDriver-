@@ -101,7 +101,7 @@ function getModbusData(machines) {
 
 //Collected machine data
 setInterval(function () {
-    if(typeof machineData !='undefined')
+    if(typeof machineData !='undefined'){}
         collectAndPush.collectParseData(machineData)
 }, 1000)
 
