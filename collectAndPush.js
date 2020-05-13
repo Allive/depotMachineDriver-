@@ -10,7 +10,6 @@ async function main() {
         else
             states[statesTB[i].codeState] = {codeState: statesTB[i].codeState, stateName:statesTB[i].name, name: statesTB[i].name}
     }
-    console.log(states)
 }
 
 function stateChange(stateName,attrs,telemetry,idMachine){
@@ -37,10 +36,12 @@ async function collectParseData(data){
             switch (key) {
                 case "input": //Меняем значения и создаём под это телеметрию только при изменении состояния, или при первом запуске
                     if(value[0] === 3 && (typeof machineData[id].universalState == 'undefined' || machineData[id].universalState !== states['work'].codeState)) {
+
                         let afterChange = stateChange('work',attrs,telemetry, id)
                         attrs = afterChange.attrs
                         telemetry = afterChange.telemetry
                     }else if (value[0] !== 3 && (typeof machineData[id].universalState == 'undefined' || machineData[id].universalState !== states['down'].codeState)){
+
                         let afterChange = stateChange('down',attrs,telemetry,id)
                         attrs = afterChange.attrs
                         telemetry = afterChange.telemetry
@@ -50,6 +51,10 @@ async function collectParseData(data){
                     //Нужно только на этапе дебага
                     if(typeof machineData[id].inputStr == 'undefined' || machineData[id].inputStr !== value.toString().replace(',','_'))
                     {
+                        console.log({
+                            name:machineData[id].name,
+                            input:value
+                        })
                         telemetry.input0 = value[0]
                         telemetry.input1 = value[1]
                         attrs.input = value.toString().replace(',','_')
@@ -59,6 +64,10 @@ async function collectParseData(data){
                 case "output":
                     if(typeof machineData[id].outputStr == 'undefined' || machineData[id].outputStr != value.toString().replace(',','_'))
                     {
+                        console.log({
+                            name:machineData[id].name,
+                            output:value
+                        })
                         telemetry.output0 = value[0]
                         telemetry.output1 = value[1]
                         attrs.output = value.toString().replace(',','_')
