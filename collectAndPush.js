@@ -65,7 +65,7 @@ async function collectParseData(data){
                         });
                         telemetry.input0 = value[0];
                         telemetry.input1 = value[1];
-                        attrs.input = value.toString().replace(',','_');
+                        telemetry.input = new Date().toLocaleTimeString() +" _ "+  value.toString().replace(',','_');
                         machineData[id].inputStr = value.toString().replace(',','_')
                     }
                     break;
@@ -80,7 +80,7 @@ async function collectParseData(data){
                         });
                         telemetry.output0 = value[0];
                         telemetry.output1 = value[1];
-                        attrs.output = value.toString().replace(',','_');
+                        telemetry.output = new Date().toLocaleTimeString() +" _ "+ value.toString().replace(',','_');
                         machineData[id].outputStr = value.toString().replace(',','_')
                     }
                     break;
@@ -99,13 +99,14 @@ async function collectParseData(data){
             //Идём проверять, какое сейчас состояние, заодно берем новую телеметрию (или нет, если ничего не изменилось)
             telemetry =  checkState(id,data[id].input, data[id].output,telemetry)
         }
-        pushData(data[id].name,attrs,telemetry);
+        let ts = new Date().getTime()
+        pushData(data[id].name,attrs,telemetry, ts);
 
-        async function pushData(name, attrs, telemetry){
+        async function pushData(name, attrs, telemetry, ts){
             try{
-                await TB.push.pushAttributes(null,'device',attrs,telemetry,null,null,null,data[id].deviceID)
+                await TB.push.pushAttributes(null,'device',attrs,telemetry,ts,null,null,data[id].deviceID)
             }catch (e) {
-               await pushData(name, attrs, telemetry)
+               await pushData(name, attrs, telemetry, ts)
             }
         }
     }
